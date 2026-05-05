@@ -449,9 +449,9 @@ module hp_tracker (
              end
              
              end
-//       else begin
-//            hp <= hp;
-//         end
+       else begin
+            hp <= hp;
+         end
 //        else begin
 //            hp <= hp;
 //        end
@@ -569,10 +569,10 @@ module pokemon_battle_top (
     
     output logic [9:0] player_pokemon_hp_current,
     output logic [9:0] enemy_pokemon_hp_current,
-    output logic [1:0] player_bar_color,
-    output logic [1:0] enemy_bar_color,
-    output logic [7:0] player_bar_length,
-    output logic [7:0] enemy_bar_length,
+//    output logic [1:0] player_bar_color,
+//    output logic [1:0] enemy_bar_color,
+//    output logic [7:0] player_bar_length,
+//    output logic [7:0] enemy_bar_length,
     output logic player_pokemon_fainted,
     output logic enemy_pokemon_fainted,
 //    output logic attack_null,
@@ -590,7 +590,8 @@ module pokemon_battle_top (
         WAIT_USER_INPUT2,
         SPEED_CHECK, 
         USER_ATTACK,         
-        ENEMY_ATTACK,    
+        ENEMY_ATTACK1,
+        ENEMY_ATTACK2,    
         CHECK_FAINT,     
         TURN_UPDATE,
         BATTLE_END_PLAYER_WINS,       
@@ -710,34 +711,41 @@ module pokemon_battle_top (
             
                  end
             WAIT_USER_INPUT2: begin
-                display_state = 5'b00100;
+                display_state = 5'b00011;
             
             end
             SPEED_CHECK:  begin
-            display_state = 5'b00101;
+            display_state = 5'b00100;
             speedcheck = 1'b1;
             
             end
             USER_ATTACK: begin
-            display_state = 5'b00110;
+            display_state = 5'b00100;
             apply_damage_to_enemy = 1'b1;
             user_attacked = 1'b1;
             
             
             end
-            ENEMY_ATTACK: begin
-            display_state = 5'b00111;
+            ENEMY_ATTACK1: begin
+            display_state = 5'b00100;
             ai_move_signal = 1'b1;
+//            apply_damage_to_player = 1'b1;
+//            enemy_attacked = 1'b1;
+            
+            end
+            ENEMY_ATTACK2: begin
+            display_state = 5'b00100;
+//            ai_move_signal = 1'b1;
             apply_damage_to_player = 1'b1;
             enemy_attacked = 1'b1;
             
             end
             CHECK_FAINT: begin
-            display_state = 5'b01000;
+            display_state = 5'b00101;
             
             end            
             TURN_UPDATE: begin
-            display_state = 5'b00011;
+            display_state = 5'b00100;
 
             turnupdate = 1'b1;
             turnover = 1'b1;
@@ -768,6 +776,8 @@ module pokemon_battle_top (
     
     
     );
+    
+    
     //makes the hp update to max at turn 0
     always_comb begin
     
@@ -870,20 +880,20 @@ hp_tracker hp_reg_enemy (
         .fainted(enemy_pokemon_fainted)
      );
      
-     health_bar bar_attacker (
-                .current_hp(player_pokemon_hp_current),
-                .max_hp(player_hp_max),
-                .color(player_barcolor),
-                .length(player_barL)
-     );
+//     health_bar bar_attacker (
+//                .current_hp(player_pokemon_hp_current),
+//                .max_hp(player_hp_max),
+//                .color(player_barcolor),
+//                .length(player_barL)
+//     );
      
      
-     health_bar bar_defender (
-                .current_hp(enemy_pokemon_hp_current),
-                .max_hp(enemy_hp_max),
-                .color(enemy_barcolor),
-                .length(enemy_barL)
-     );
+//     health_bar bar_defender (
+//                .current_hp(enemy_pokemon_hp_current),
+//                .max_hp(enemy_hp_max),
+//                .color(enemy_barcolor),
+//                .length(enemy_barL)
+//     );
      
      attacked playerattackcheck(
      
@@ -938,6 +948,30 @@ hp_tracker hp_reg_enemy (
     assign valid_attacker = (player_select < NUM_POKEMON);
     assign valid_defender = (enemy_select < NUM_POKEMON);
     
+    logic pressed;
+    logic pressed_0;
+    always_comb begin
+    
+    if((keycode == 8'h28) || (keycode == 8'h2C))
+        pressed = 1'b1;
+    else
+        pressed = 1'b0;
+    
+    
+    
+    
+    
+    end
+//    sync_debounce(
+//        .clk(clk),
+//        .d(pressed),
+        
+//        .q(pressed_0)
+    
+    
+//    );
+    
+
     always_comb begin
     
     battle_state_nxt = battle_state;
@@ -945,14 +979,16 @@ hp_tracker hp_reg_enemy (
         unique case(battle_state)
 
             START: 
-                if(keycode == 8'h28) begin
+                if((keycode == 8'h28)) begin
                     battle_state_nxt = SELECT;
                     end
                 else
                     battle_state_nxt = START;
             SELECT:
                 if((keycode == 8'h1E)||(keycode == 8'h1F)||(keycode == 8'h20)||(keycode == 8'h21)||(keycode == 8'h22)||(keycode == 8'h23)||(keycode == 8'h24)||(keycode == 8'h25)||(keycode == 8'h26))
+//                if(keycode == 8'h1B)
                     battle_state_nxt = TURNZERO;
+                    
                 else
                     battle_state_nxt = SELECT;
                 
@@ -981,13 +1017,20 @@ hp_tracker hp_reg_enemy (
                 if(player_wins_sc == 1'b1)
                     battle_state_nxt = USER_ATTACK;
                 else
-                    battle_state_nxt = ENEMY_ATTACK;
+                    battle_state_nxt = ENEMY_ATTACK1;
             end
             USER_ATTACK: begin
 //                    user_attacked = 1'b1;
                     battle_state_nxt = CHECK_FAINT;            
             end
-            ENEMY_ATTACK: begin
+            ENEMY_ATTACK1: begin
+                
+                battle_state_nxt = ENEMY_ATTACK2;
+            
+            end
+                
+            
+            ENEMY_ATTACK2: begin
 //                    enemy_attacked = 1'b1;
                     battle_state_nxt = CHECK_FAINT;            
             end
@@ -995,7 +1038,7 @@ hp_tracker hp_reg_enemy (
             if((player_pokemon_fainted || enemy_pokemon_fainted) == 1'b0) begin
                 if(did_enemy_attack && did_user_attack == 1'b0)begin
                     if(did_enemy_attack == 1'b0)begin
-                        battle_state_nxt = ENEMY_ATTACK;
+                        battle_state_nxt = ENEMY_ATTACK1;
                         end
                     else
                         battle_state_nxt = USER_ATTACK;
