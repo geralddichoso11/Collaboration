@@ -447,6 +447,11 @@ module hp_tracker (
             else begin
              hp <= hp - damage;
              end
+             
+             end
+//       else begin
+//            hp <= hp;
+//         end
 //        else begin
 //            hp <= hp;
 //        end
@@ -460,7 +465,6 @@ module hp_tracker (
 //             hp = current_hp_after;
 //             current_hp_after = hp - damage;
 //             end
-    end
    assign current_hp_after = hp;
 //             end
              
@@ -579,8 +583,8 @@ module pokemon_battle_top (
     
 
     enum logic [3:0] {
-//        START,
-//        SELECT,
+        START,
+        SELECT,
         TURNZERO,
         WAIT_USER_INPUT1,
         WAIT_USER_INPUT2,
@@ -597,7 +601,7 @@ module pokemon_battle_top (
 	begin
 //			battle_state <= battle_state_nxt;
 			if(reset)
-			battle_state <= TURNZERO;
+			battle_state <= START;
 			else
 			battle_state <= battle_state_nxt;
 			
@@ -653,19 +657,21 @@ module pokemon_battle_top (
     logic isturnzero;
     logic turnover;
     
-   always_comb begin
+   always_ff @(posedge clk) begin
     if(keycode == 8'h1E) begin
-        move_select = 2'b00;
+        move_select <= 2'b00;
     end
     else if(keycode == 8'h1F) begin
-        move_select = 2'b01;
+        move_select <= 2'b01;
     end
     else if(keycode == 8'h20) begin
-        move_select = 2'b10;
+        move_select <= 2'b10;
     end
     else if(keycode == 8'h21) begin
-        move_select = 2'b11;
+        move_select <= 2'b11;
     end
+    else    
+        move_select <= move_select;
     
     end
     
@@ -686,58 +692,65 @@ module pokemon_battle_top (
 
             
             case (battle_state)
+            START: begin
+                display_state = 5'b00000;
+                
+                end
+            SELECT:
+                display_state = 5'b00001;
+            
             TURNZERO: begin
                 isturnzero = 1'b1;
-                display_state = 5'b00000;
+                display_state = 5'b00010;
             
             end
             
             WAIT_USER_INPUT1: begin
-                display_state = 5'b00001;
+                display_state = 5'b00010;
             
                  end
             WAIT_USER_INPUT2: begin
-                display_state = 5'b00010;
+                display_state = 5'b00100;
             
             end
             SPEED_CHECK:  begin
-            display_state = 5'b00011;
+            display_state = 5'b00101;
             speedcheck = 1'b1;
             
             end
             USER_ATTACK: begin
-            display_state = 5'b00100;
+            display_state = 5'b00110;
             apply_damage_to_enemy = 1'b1;
             user_attacked = 1'b1;
             
             
             end
             ENEMY_ATTACK: begin
-            display_state = 5'b00101;
+            display_state = 5'b00111;
             ai_move_signal = 1'b1;
             apply_damage_to_player = 1'b1;
             enemy_attacked = 1'b1;
             
             end
             CHECK_FAINT: begin
-            display_state = 5'b00110;
+            display_state = 5'b01000;
             
             end            
             TURN_UPDATE: begin
-            display_state = 5'b00111;
+            display_state = 5'b00011;
 
             turnupdate = 1'b1;
             turnover = 1'b1;
             end
             BATTLE_END_PLAYER_WINS: begin
-            display_state = 5'b01000;
+            display_state = 5'b01010;
             
             
             
             end
             
             BATTLE_END_PLAYER_LOSES: begin
-            display_state = 5'b01001;
+            display_state = 5'b01011;
             
             
             end
@@ -931,7 +944,18 @@ hp_tracker hp_reg_enemy (
      
         unique case(battle_state)
 
-        
+            START: 
+                if(keycode == 8'h28) begin
+                    battle_state_nxt = SELECT;
+                    end
+                else
+                    battle_state_nxt = START;
+            SELECT:
+                if((keycode == 8'h1E)||(keycode == 8'h1F)||(keycode == 8'h20)||(keycode == 8'h21)||(keycode == 8'h22)||(keycode == 8'h23)||(keycode == 8'h24)||(keycode == 8'h25)||(keycode == 8'h26))
+                    battle_state_nxt = TURNZERO;
+                else
+                    battle_state_nxt = SELECT;
+                
             TURNZERO:
                 if(keycode == 8'h2C) begin
                     battle_state_nxt = WAIT_USER_INPUT2;
@@ -993,6 +1017,17 @@ hp_tracker hp_reg_enemy (
                 battle_state_nxt = WAIT_USER_INPUT1;
             
             end
+            
+            BATTLE_END_PLAYER_WINS:
+                if(keycode == 8'h29)
+                    battle_state_nxt = START;
+                else
+                    battle_state_nxt = BATTLE_END_PLAYER_WINS;
+            BATTLE_END_PLAYER_LOSES:
+                if(keycode == 8'h29)
+                    battle_state_nxt = START;
+                else
+                    battle_state_nxt = BATTLE_END_PLAYER_LOSES;
             
                       
             
