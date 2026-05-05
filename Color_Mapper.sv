@@ -103,7 +103,8 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
 	battle,
 	battle_select,
 	win,
-	lose
+	lose,
+    faint
 	} state, state_nxt; 
     
     
@@ -126,9 +127,9 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                     Red = selr;
                     Green = selg;
                     Blue = selb;
-                
-                
                 end
+                
+                
                 battle:
                     begin
                         Red = battler;
@@ -216,17 +217,16 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                                 Green = 4'h0;
                                 Blue = 4'hF;
                             end
-                        end
-                            
-                            
-                        
+                        end     
                     end
+                    
                     win:
                     begin
                         Red = winr;
                         Green = wing;
                         Blue = winb;
                         end
+                    
                     lose:
                     begin
                         Red = loser;
@@ -239,7 +239,6 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
             endcase
         
         
-    
     
     
     end
@@ -255,6 +254,8 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                      else
                         state_nxt = start;
                  end
+                 
+                 
                  select:
                  begin
                     if(display_state == 5'b00010)
@@ -264,6 +265,8 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                  
                  
                  end
+                 
+                 
                  battle:
                  begin
                     if(display_state == 5'b00100)
@@ -271,6 +274,8 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                     else
                     state_nxt = battle;
                  end
+                 
+                 
                  battle_select:
                  begin
                     if(display_state == 5'b00010)
@@ -278,6 +283,8 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                     else
                         state_nxt = battle_select;
                  end
+                
+                
                  win:
                  begin
                     if(display_state == 5'b00000)
@@ -287,20 +294,30 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                  
                  
                  end
+                 
+                 
                  lose:
                  begin
-                 if(display_state == 5'b00000)
+                    if(display_state == 5'b00000)
                         state_nxt = start;
                     else
                         state_nxt = lose;
                  
                  
                  end
-                    
+                
+                
+                faint:
+                begin
+                    if(player_fainted == 1'b1) 
+                        state_nxt = lose;
+                    else
+                        state_nxt = win;
+                end
             endcase
     end
     
-   
+
     
     
 endmodule
