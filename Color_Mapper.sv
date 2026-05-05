@@ -102,9 +102,10 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
 	select,
 	battle,
 	battle_select,
+	idle,
+	checkfaint,
 	win,
-	lose,
-    faint
+	lose
 	} state, state_nxt; 
     
     
@@ -309,7 +310,7 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                 
                 faint:
                 begin
-                    if(player_fainted == 1'b1) 
+					if(player_fainted == 1'b1) // change this to displaystate stuff and refer to how fsm in battle system works.  Also idle always goes to faint but faint can go to idle, win, lose, and battle
                         state_nxt = lose;
                     else
                         state_nxt = win;
