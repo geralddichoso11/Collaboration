@@ -61,7 +61,7 @@ always_comb begin
              hp = 10'd80; attack = 10'd82; defense = 10'd83; sp_attack = 10'd100; sp_defense = 10'd100; speed = 10'd80;
              type1 = TYPE_GRASS; type2 = TYPE_POISON;
                  unique case (move_select)
-                  2'd0: begin move_power = 8'd120; move_type = TYPE_GRASS;  move_category = CATEGORY_SPECIAL;  end // Solar Beam
+                  2'd0: begin move_power = 8'd90; move_type = TYPE_GRASS;  move_category = CATEGORY_SPECIAL;  end // Energy Ball
                   2'd1: begin move_power = 8'd55;  move_type = TYPE_GRASS;  move_category = CATEGORY_PHYSICAL; end // Razor Leaf
                   2'd2: begin move_power = 8'd90;  move_type = TYPE_POISON; move_category = CATEGORY_SPECIAL;  end // Sludge Bomb
                   2'd3: begin move_power = 8'd30; move_type = TYPE_GRASS;  move_category = CATEGORY_PHYSICAL;  end // Vine Whip
@@ -74,7 +74,7 @@ always_comb begin
         // Move slots 0-3. Each slot outputs power, type, and physical/special category.
              unique case (move_select)
                 2'd0: begin move_power = 8'd90;  move_type = TYPE_FIRE;   move_category = CATEGORY_SPECIAL;  end // Flamethrower
-                2'd1: begin move_power = 8'd110; move_type = TYPE_FIRE;   move_category = CATEGORY_SPECIAL;  end // Fire Blast
+                2'd1: begin move_power = 8'd40; move_type = TYPE_GROUND;   move_category = CATEGORY_SPECIAL;  end // Rock Smash
                 2'd2: begin move_power = 8'd75;  move_type = TYPE_FLYING; move_category = CATEGORY_SPECIAL;  end // Air Slash
                 2'd3: begin move_power = 8'd80; move_type = TYPE_DRAGON; move_category = CATEGORY_PHYSICAL; end // Dragon Claw
              endcase
@@ -85,9 +85,9 @@ always_comb begin
         type1 = TYPE_WATER; type2 = TYPE_NONE;
         unique case (move_select)
             2'd0: begin move_power = 8'd90;  move_type = TYPE_WATER;  move_category = CATEGORY_SPECIAL;  end // Surf
-            2'd1: begin move_power = 8'd110; move_type = TYPE_WATER;  move_category = CATEGORY_SPECIAL;  end // Hydro Pump
+            2'd1: begin move_power = 8'd40; move_type = TYPE_WATER;  move_category = CATEGORY_SPECIAL;  end // WATER GUN
             2'd2: begin move_power = 8'd90;  move_type = TYPE_ICE;    move_category = CATEGORY_SPECIAL;  end // Ice Beam
-            2'd3: begin move_power = 8'd130; move_type = TYPE_NORMAL; move_category = CATEGORY_PHYSICAL; end // Skull Bash
+            2'd3: begin move_power = 8'd75; move_type = TYPE_ICE; move_category = CATEGORY_PHYSICAL; end // ICE PUNCH
         endcase       
     end
      else if(pokemon_id == 4'd3) begin
@@ -96,9 +96,9 @@ always_comb begin
         type1 = TYPE_ELECTRIC; type2 = TYPE_NONE;
         unique case (move_select)
             2'd0: begin move_power = 8'd90;  move_type = TYPE_ELECTRIC; move_category = CATEGORY_SPECIAL;  end // Thunderbolt
-            2'd1: begin move_power = 8'd110; move_type = TYPE_ELECTRIC; move_category = CATEGORY_SPECIAL;  end // Thunder
+            2'd1: begin move_power = 8'd75; move_type = TYPE_ELECTRIC; move_category = CATEGORY_SPECIAL;  end // Thunder PUNCH
             2'd2: begin move_power = 8'd40;  move_type = TYPE_NORMAL;   move_category = CATEGORY_PHYSICAL; end // Quick Attack
-            2'd3: begin move_power = 8'd100; move_type = TYPE_STEEL;  move_category = CATEGORY_PHYSICAL; end // Iron Tail
+            2'd3: begin move_power = 8'd65; move_type = TYPE_ELECTRIC;  move_category = CATEGORY_PHYSICAL; end // THUNDER FANG
         endcase
     end
     else if(pokemon_id == 4'd4) begin
@@ -107,8 +107,8 @@ always_comb begin
         type1 = TYPE_GHOST; type2 = TYPE_POISON;
         unique case (move_select)
             2'd0: begin move_power = 8'd80; move_type = TYPE_GHOST;  move_category = CATEGORY_SPECIAL; end // Shadow Ball
-            2'd1: begin move_power = 8'd95; move_type = TYPE_POISON; move_category = CATEGORY_SPECIAL; end // Sludge Wave
-            2'd2: begin move_power = 8'd100; move_type = TYPE_PSYCHIC; move_category = CATEGORY_SPECIAL; end // Dream Eater
+            2'd1: begin move_power = 8'd60; move_type = TYPE_GHOST; move_category = CATEGORY_SPECIAL; end // SHADOW PUNCH
+            2'd2: begin move_power = 8'd70; move_type = TYPE_DARK; move_category = CATEGORY_SPECIAL; end // SUCKER PUNCH
             2'd3: begin move_power = 8'd80; move_type = TYPE_FAIRY; move_category = CATEGORY_SPECIAL; end // Dazzling Gleam
         endcase
     end
@@ -117,10 +117,10 @@ always_comb begin
         hp = 10'd65; attack = 10'd130; defense = 10'd60; sp_attack = 10'd95; sp_defense = 10'd110; speed = 10'd65;
         type1 = TYPE_FIRE; type2 = TYPE_NONE;
         unique case (move_select)
-            2'd0: begin move_power = 8'd120; move_type = TYPE_FIRE;     move_category = CATEGORY_PHYSICAL; end // Flare Blitz
+            2'd0: begin move_power = 8'd90; move_type = TYPE_NORMAL;     move_category = CATEGORY_PHYSICAL; end // TAKE DOWN
             2'd1: begin move_power = 8'd65;  move_type = TYPE_FIRE;     move_category = CATEGORY_PHYSICAL; end // Fire Fang
             2'd2: begin move_power = 8'd60;  move_type = TYPE_DARK;     move_category = CATEGORY_PHYSICAL; end // Bite
-            2'd3: begin move_power = 8'd120; move_type = TYPE_FIGHTING; move_category = CATEGORY_PHYSICAL; end // Superpower
+            2'd3: begin move_power = 8'd80; move_type = TYPE_FIRE; move_category = CATEGORY_PHYSICAL; end // LAVAPLUME
         endcase
     end
     else if(pokemon_id == 4'd6) begin
@@ -131,7 +131,7 @@ always_comb begin
             2'd0: begin move_power = 8'd70; move_type = TYPE_POISON; move_category = CATEGORY_PHYSICAL; end // Cross Poison
             2'd1: begin move_power = 8'd75; move_type = TYPE_FLYING; move_category = CATEGORY_SPECIAL;  end // Air Slash
             2'd2: begin move_power = 8'd60; move_type = TYPE_DARK;   move_category = CATEGORY_PHYSICAL; end // Bite
-            2'd3: begin move_power = 8'd100; move_type = TYPE_GHOST; move_category = CATEGORY_SPECIAL;  end // Ominous Wind
+            2'd3: begin move_power = 8'd90; move_type = TYPE_POISIN; move_category = CATEGORY_SPECIAL;  end // SLUDGE BOMB
         endcase
     end
     else if(pokemon_id == 4'd7) begin
@@ -151,8 +151,8 @@ always_comb begin
         type1 = TYPE_FIGHTING; type2 = TYPE_STEEL;
         unique case (move_select)
             2'd0: begin move_power = 8'd80;  move_type = TYPE_FIGHTING; move_category = CATEGORY_SPECIAL;  end // Aura Sphere
-            2'd1: begin move_power = 8'd120; move_type = TYPE_FIGHTING; move_category = CATEGORY_PHYSICAL; end // Close Combat
-            2'd2: begin move_power = 8'd25;  move_type = TYPE_GROUND;   move_category = CATEGORY_PHYSICAL; end // Bone Rush
+            2'd1: begin move_power = 8'd75; move_type = TYPE_FIGHTING; move_category = CATEGORY_PHYSICAL; end // BRICK BREAK
+            2'd2: begin move_power = 8'd50;  move_type = TYPE_STEEL;   move_category = CATEGORY_PHYSICAL; end // METAL CLAW
             2'd3: begin move_power = 8'd80; move_type = TYPE_NORMAL;  move_category = CATEGORY_PHYSICAL; end // Extreme Speed
         endcase
     end
