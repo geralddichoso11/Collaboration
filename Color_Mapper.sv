@@ -221,6 +221,21 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                         end     
                     end
                     
+                    idle: //idle is like the battle screen while waiting to go to faint state
+                    begin
+                        Red = battler;
+                        Green = battleg;
+                        Blue = battleb;
+                    end
+
+                    checkfaint: //checkfaint is like the battle screen while waiting for the battle fsm to decide next screen
+                    begin
+                        Red = battler;
+                        Green = battleg;
+                        Blue = battleb;
+                    end
+
+
                     win:
                     begin
                         Red = winr;
@@ -233,15 +248,8 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                         Red = loser;
                         Green = loseg;
                         Blue = loseb;
-                    
-                    
-                    
                     end
             endcase
-        
-        
-    
-    
     end
     
     always_comb begin
@@ -263,17 +271,15 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                         state_nxt = battle;
                     else
                         state_nxt = select;
-                 
-                 
                  end
                  
                  
-                 battle:
+                 battle:                 
                  begin
                     if(display_state == 5'b00100)
                         state_nxt = battle_select;
                     else
-                    state_nxt = battle;
+                        state_nxt = battle;
                  end
                  
                  
@@ -292,8 +298,6 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                         state_nxt = start;
                     else
                         state_nxt = win;
-                 
-                 
                  end
                  
                  
@@ -303,18 +307,44 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                         state_nxt = start;
                     else
                         state_nxt = lose;
-                 
-                 
                  end
                 
                 
-                faint:
+                idle: //added idle state
                 begin
-					if(player_fainted == 1'b1) // change this to displaystate stuff and refer to how fsm in battle system works.  Also idle always goes to faint but faint can go to idle, win, lose, and battle
-                        state_nxt = lose;
-                    else
-                        state_nxt = win;
+                    state_nxt = faint;
                 end
+
+
+                checkfaint: //changed to display_state stuff, but verify if the correct display_state used (used ones in color_mapper and pokemon_battle_system)
+					if(display_state == 5'b00010)
+                    begin
+                        state_nxt = idle;
+                    end
+                    else if(display_state == 5'b01010)
+                    begin
+                        state_nxt = win;
+                    end
+                    else if(display_state == 5'b01011)
+                    begin
+                        state_nxt = lose;
+                    end
+                    else if(display_state == 5'b00010)
+                    begin
+                        state_nxt = battle;
+                    end
+                    else if(display_state == 5'b00100)
+                    begin
+                        state_nxt = battle_select;
+                    end
+                    else
+                    begin
+                        state_nxt = checkfaint;
+                    end
+                     
+                     // change this to displaystate stuff and refer to how fsm in battle system works. Also idle always goes to faint but faint can go to idle, win, lose, and battle
+                   
+                 
             endcase
     end
     
