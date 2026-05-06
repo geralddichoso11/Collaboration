@@ -16,24 +16,27 @@
 
 module  color_mapper ( input  logic [9:0] DrawX, DrawY,
                        input logic clk,
+                       input logic reset,
                        input logic [3:0] startr, startg, startb, battler, battleg, battleb, spriter, spriteg, spriteb,
                        input logic [3:0] selr, selg, selb, winr, wing, winb, loser, loseg, loseb,
+                       input logic [3:0] mover, moveg, moveb,
                        input logic [5:0] display_state,
-                       input logic [7:0] player_hp_bar_length, enemy_hp_bar_length,
-                       input logic [1:0] player_hp_bar_color, enemy_hp_bar_color,
+                       input logic [9:0] phealthmax, ehealthmax, phealth, ehealth,
+//                       input logic [7:0] player_hp_bar_length, enemy_hp_bar_length,
+//                       input logic [1:0] player_hp_bar_color, enemy_hp_bar_color,
                        input logic player_fainted, enemy_fainted,
                        input  logic [7:0]  keycode,
                        output logic [3:0]  Red, Green, Blue );
     
     logic ball_on;
 parameter [9:0] player_x = 80;
-parameter [9:0] player_y = 260;
+parameter [9:0] player_y = 220;
 parameter [9:0] enemy_x = 400;
 parameter [9:0] enemy_y = 100;
 
 
-logic [9:0] playerX, PlayerY;
-logic [9:0] enemyX, enemyY;
+//logic [9:0] playerX, PlayerY;
+//logic [9:0] enemyX, enemyY;
 //logic [9:0] player_sprite_x, player_sprite_y;
 //logic [9:0] enemy_sprite_x, enemy_sprite_y;
 logic playeron, enemyon;
@@ -50,6 +53,15 @@ parameter [9:0] enemy_hp_bar_y = 85;
 parameter [9:0] hp_bar_max_width = 100;
 parameter [9:0] hp_bar_height = 8;
 
+
+
+
+parameter [9:0] move_x = 0;
+parameter [9:0] move_y = 301;
+parameter [9:0] movesizex = 160;
+parameter [9:0] movesizey = 50;
+
+
 //always_comb begin
 //    player_sprite_x   = DrawX - player_x;
 //    player_sprite_y   = DrawY - player_y;
@@ -58,12 +70,13 @@ parameter [9:0] hp_bar_height = 8;
 //    end
 assign playeron = (DrawX >= player_x) && (DrawX < player_x + 80)&&(DrawY >= player_y) && (DrawY < player_y + 80);
 assign enemyon = (DrawX >= enemy_x) && (DrawX < enemy_x + 80)&&(DrawY >= enemy_y) && (DrawY < enemy_y + 80);
-	 
-	 
-	 
-assign player_hp_bar_width = (player_hp_bar_length * hp_bar_max_width) / 100;
+assign moveseton = (DrawX >= move_x) && (DrawX < move_x + 639)&&(DrawY >= move_y) && (DrawY < move_y + 178);
 
-assign enemy_hp_bar_width = (enemy_hp_bar_length * hp_bar_max_width) / 100;
+	 
+	 
+assign player_hp_bar_width = (phealthmax*100)/phealth;
+
+assign enemy_hp_bar_width = (ehealthmax*100)/ehealth;
 
 assign player_hp_bar_on = (DrawX >= player_hp_bar_x) && (DrawX < player_hp_bar_x + player_hp_bar_width) &&
                           (DrawY >= player_hp_bar_y) && (DrawY < player_hp_bar_y + hp_bar_height);
@@ -111,7 +124,9 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
     
     always_ff @ (posedge clk)
 	begin
-		
+	       if(reset)
+	           state <= start;
+	       else
 			state <= state_nxt;
 	end
        
@@ -128,9 +143,9 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                     Red = selr;
                     Green = selg;
                     Blue = selb;
+                
+                
                 end
-                
-                
                 battle:
                     begin
                         Red = battler;
@@ -143,20 +158,47 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                              Blue  = spriteb;
                              end
                         end
-                        if (player_hp_bar_on) begin
-                            case (player_hp_bar_color)
-                                2'b00: begin Red = 4'h0; Green = 4'hF; Blue = 4'h0; end
-                                2'b01: begin Red = 4'hF; Green = 4'h8; Blue = 4'h0; end
-                                default: begin Red = 4'hF; Green = 4'h0; Blue = 4'h0; end
-                            endcase
-                        end
-                        if (enemy_hp_bar_on) begin
-                            case (enemy_hp_bar_color)
-                                2'b00: begin Red = 4'h0; Green = 4'hF; Blue = 4'h0; end
-                                2'b01: begin Red = 4'hF; Green = 4'h8; Blue = 4'h0; end
-                                default: begin Red = 4'hF; Green = 4'h0; Blue = 4'h0; end
-                            endcase
-                        end
+//                        if (player_hp_bar_on) begin
+//                            if(phealth >= 60)begin
+//                                    Red = 4'h0;
+//                                    Green = 4'hF;
+//                                    Blue = 4'h0;
+                                
+//                                end
+//                             else if((phealth <= 60) || (phealth >=20))begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h2;
+//                                    Blue = 4'h2;
+                             
+//                             end
+//                             else begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h0;
+//                                    Blue = 4'h0;
+                             
+                             
+//                             end                      
+//                        end
+//                        if (enemy_hp_bar_on) begin
+//                            if(ehealth >= 60)begin
+//                                    Red = 4'h0;
+//                                    Green = 4'hF;
+//                                    Blue = 4'h0;
+                                
+//                                end
+//                             else if((ehealth <= 60) || (ehealth >=20))begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h2;
+//                                    Blue = 4'h2;
+                             
+//                             end
+//                             else begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h0;
+//                                    Blue = 4'h0;
+//                             end
+                            
+//                        end
                         if (player_fainted) begin
                             if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
                                 Red = 4'hF;
@@ -191,20 +233,55 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                              Blue  = spriteb;
                              end
                         end
-                        if (player_hp_bar_on) begin
-                            case (player_hp_bar_color)
-                                2'b00: begin Red = 4'h0; Green = 4'hF; Blue = 4'h0; end
-                                2'b01: begin Red = 4'hF; Green = 4'h8; Blue = 4'h0; end
-                                default: begin Red = 4'hF; Green = 4'h0; Blue = 4'h0; end
-                            endcase
-                        end
-                        if (enemy_hp_bar_on) begin
-                            case (enemy_hp_bar_color)
-                                2'b00: begin Red = 4'h0; Green = 4'hF; Blue = 4'h0; end
-                                2'b01: begin Red = 4'hF; Green = 4'h8; Blue = 4'h0; end
-                                default: begin Red = 4'hF; Green = 4'h0; Blue = 4'h0; end
-                            endcase
-                        end
+                            if(moveseton == 1'b1)begin
+                             Red = mover;
+                             Green = moveg;
+                             Blue = moveb;
+                            
+                            
+                            
+                            
+                            end
+//                        if (player_hp_bar_on) begin
+//                            if(phealth >= 60)begin
+//                                    Red = 4'h0;
+//                                    Green = 4'hF;
+//                                    Blue = 4'h0;
+                                
+//                                end
+//                             else if((phealth <= 60) || (phealth >=20))begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h2;
+//                                    Blue = 4'h2;
+                             
+//                             end
+//                             else begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h0;
+//                                    Blue = 4'h0;
+                             
+                             
+//                             end                      
+//                             end
+//                        if(enemy_hp_bar_on) begin
+//                            if(ehealth >= 60)begin
+//                                    Red = 4'h0;
+//                                    Green = 4'hF;
+//                                    Blue = 4'h0;
+                                
+//                                end
+//                             else if((ehealth <= 60) || (enemy_hp_bar_width >=20))begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h2;
+//                                    Blue = 4'h2;
+                             
+//                             end
+//                             else begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h0;
+//                                    Blue = 4'h0;
+//                             end
+//                        end
                         if (player_fainted) begin
                             if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
                                 Red = 4'hF;
@@ -218,38 +295,170 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                                 Green = 4'h0;
                                 Blue = 4'hF;
                             end
-                        end     
+                        end
+                            
+                            
+                        
+                    end
+                    idle:
+                    begin 
+                        Red = battler;
+                        Green = battleg;
+                        Blue = battleb;
+                          if(playeron || enemyon == 1'b1) begin
+                            if ({spriter, spriteg, spriteb} != magenta) begin
+                             Red   = spriter;
+                             Green = spriteg;
+                             Blue  = spriteb;
+                             end
+                            end
+//                        if (player_hp_bar_on) begin
+//                            if(player_hp_bar_width >= 60)begin
+//                                    Red = 4'h0;
+//                                    Green = 4'hF;
+//                                    Blue = 4'h0;
+                                
+//                                end
+//                             else if((player_hp_bar_width <= 60) || (player_hp_bar_width >=20))begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h2;
+//                                    Blue = 4'h2;
+                             
+//                             end
+//                             else begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h0;
+//                                    Blue = 4'h0;
+                             
+                             
+//                             end                      
+//                             end
+//                        if(enemy_hp_bar_on) begin
+//                            if(enemy_hp_bar_width >= 60)begin
+//                                    Red = 4'h0;
+//                                    Green = 4'hF;
+//                                    Blue = 4'h0;
+                                
+//                                end
+//                             else if((enemy_hp_bar_width <= 60) || (enemy_hp_bar_width >=20))begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h2;
+//                                    Blue = 4'h2;
+                             
+//                             end
+//                             else begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h0;
+//                                    Blue = 4'h0;
+//                             end
+//                        end
+//                        if (player_fainted) begin
+//                            if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
+//                                Red = 4'hF;
+//                                Green = 4'h0;
+//                                Blue = 4'h0;
+//                            end
+//                            end
+                        else if(enemy_fainted) begin
+                            if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
+                                Red = 4'h0;
+                                Green = 4'h0;
+                                Blue = 4'hF;
+                            end
+                    
+                    end
+                    end
+                    checkfaint:
+                    begin
+                                                Red = battler;
+                        Green = battleg;
+                        Blue = battleb;
+                          if(playeron || enemyon == 1'b1) begin
+                            if ({spriter, spriteg, spriteb} != magenta) begin
+                             Red   = spriter;
+                             Green = spriteg;
+                             Blue  = spriteb;
+                             end
+                            end
+//                        if (player_hp_bar_on) begin
+//                            if(player_hp_bar_width >= 60)begin
+//                                    Red = 4'h0;
+//                                    Green = 4'hF;
+//                                    Blue = 4'h0;
+                                
+//                                end
+//                             else if((player_hp_bar_width <= 60) || (player_hp_bar_width >=20))begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h2;
+//                                    Blue = 4'h2;
+                             
+//                             end
+//                             else begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h0;
+//                                    Blue = 4'h0;
+                             
+                             
+//                             end                      
+//                             end
+//                        if(enemy_hp_bar_on) begin
+//                            if(enemy_hp_bar_width >= 60)begin
+//                                    Red = 4'h0;
+//                                    Green = 4'hF;
+//                                    Blue = 4'h0;
+                                
+//                                end
+//                             else if((enemy_hp_bar_width <= 60) || (enemy_hp_bar_width >=20))begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h2;
+//                                    Blue = 4'h2;
+                             
+//                             end
+//                             else begin
+//                                    Red = 4'hF;
+//                                    Green = 4'h0;
+//                                    Blue = 4'h0;
+//                             end
+//                        end
+                        if (player_fainted) begin
+                            if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
+                                Red = 4'hF;
+                                Green = 4'h0;
+                                Blue = 4'h0;
+                            end
+                            end
+                        else if(enemy_fainted) begin
+                            if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
+                                Red = 4'h0;
+                                Green = 4'h0;
+                                Blue = 4'hF;
+                            end
+                    
                     end
                     
-                    idle: //idle is like the battle screen while waiting to go to faint state
-                    begin
-                        Red = battler;
-                        Green = battleg;
-                        Blue = battleb;
                     end
-
-                    checkfaint: //checkfaint is like the battle screen while waiting for the battle fsm to decide next screen
-                    begin
-                        Red = battler;
-                        Green = battleg;
-                        Blue = battleb;
-                    end
-
-
+                    
                     win:
                     begin
                         Red = winr;
                         Green = wing;
                         Blue = winb;
                         end
-                    
                     lose:
                     begin
                         Red = loser;
                         Green = loseg;
                         Blue = loseb;
+                    
+                    
+                    
                     end
             endcase
+        
+        
+    
+    
+    
     end
     
     always_comb begin
@@ -263,69 +472,93 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                      else
                         state_nxt = start;
                  end
-                 
-                 
                  select:
                  begin
                     if(display_state == 5'b00010)
                         state_nxt = battle;
                     else
                         state_nxt = select;
+                 
+                 
                  end
-                 
-                 
-                 battle:                 
+                 battle:
                  begin
                     if(display_state == 5'b00100)
                         state_nxt = battle_select;
+                    else if(player_fainted == 1'b1)
+                    begin
+                        state_nxt = win;
+                    end
+                    else if(enemy_fainted == 1'b1)
+                    begin
+                        state_nxt = lose;
+                    end
                     else
-                        state_nxt = battle;
+                    state_nxt = battle;
                  end
-                 
-                 
                  battle_select:
                  begin
                     if(display_state == 5'b00010)
                         state_nxt = battle;
+                   else if(player_fainted == 1'b1)
+                    begin
+                        state_nxt = win;
+                    end
+                    else if(enemy_fainted == 1'b1)
+                    begin
+                        state_nxt = lose;
+                    end
                     else
                         state_nxt = battle_select;
                  end
-                
-                
                  win:
                  begin
                     if(display_state == 5'b00000)
                         state_nxt = start;
                     else
                         state_nxt = win;
+                 
+                 
                  end
-                 
-                 
                  lose:
                  begin
-                    if(display_state == 5'b00000)
+                 if(display_state == 5'b00000)
                         state_nxt = start;
                     else
                         state_nxt = lose;
+                 
+                 
                  end
-                
-                
-                idle: //added idle state
+                 
+              idle: //added idle state
                 begin
-                    state_nxt = faint;
+                if(display_state == 5'b00101)
+                    state_nxt = checkfaint;
+                else if(display_state == 5'b00010)
+                    state_nxt = battle;
+                else if(player_fainted == 1'b1)
+                    begin
+                        state_nxt = win;
+                    end
+                else if(enemy_fainted == 1'b1)
+                    begin
+                        state_nxt = lose;
+                    end
+                else
+                    state_nxt = idle;
+                    
                 end
-
-
-                checkfaint: //changed to display_state stuff, but verify if the correct display_state used (used ones in color_mapper and pokemon_battle_system)
+                 
+                 checkfaint: begin//changed to display_state stuff, but verify if the correct display_state used (used ones in color_mapper and pokemon_battle_system)
 					if(display_state == 5'b00010)
                     begin
                         state_nxt = idle;
                     end
-                    else if(display_state == 5'b01010)
+                    else if(player_fainted == 1'b1)
                     begin
                         state_nxt = win;
                     end
-                    else if(display_state == 5'b01011)
+                    else if(enemy_fainted == 1'b1)
                     begin
                         state_nxt = lose;
                     end
@@ -342,13 +575,11 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                         state_nxt = checkfaint;
                     end
                      
-                     // change this to displaystate stuff and refer to how fsm in battle system works. Also idle always goes to faint but faint can go to idle, win, lose, and battle
-                   
-                 
+                    end
             endcase
     end
     
-
+   
     
     
 endmodule
