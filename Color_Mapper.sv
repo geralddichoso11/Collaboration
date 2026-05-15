@@ -22,8 +22,7 @@ module  color_mapper ( input  logic [9:0] DrawX, DrawY,
                        input logic [3:0] mover, moveg, moveb,
                        input logic [5:0] display_state,
                        input logic [9:0] phealthmax, ehealthmax, phealth, ehealth,
-//                       input logic [7:0] player_hp_bar_length, enemy_hp_bar_length,
-//                       input logic [1:0] player_hp_bar_color, enemy_hp_bar_color,
+
                        input logic player_fainted, enemy_fainted,
                        input  logic [7:0]  keycode,
                        output logic [3:0]  Red, Green, Blue );
@@ -61,6 +60,8 @@ parameter [9:0] move_y = 301;
 parameter [9:0] movesizex = 160;
 parameter [9:0] movesizey = 50;
 
+logic moveseton;
+
 
 //always_comb begin
 //    player_sprite_x   = DrawX - player_x;
@@ -70,13 +71,13 @@ parameter [9:0] movesizey = 50;
 //    end
 assign playeron = (DrawX >= player_x) && (DrawX < player_x + 80)&&(DrawY >= player_y) && (DrawY < player_y + 80);
 assign enemyon = (DrawX >= enemy_x) && (DrawX < enemy_x + 80)&&(DrawY >= enemy_y) && (DrawY < enemy_y + 80);
-assign moveseton = (DrawX >= move_x) && (DrawX < move_x + 639)&&(DrawY >= move_y) && (DrawY < move_y + 178);
+assign moveseton = (DrawX >= move_x) && (DrawX < move_x + 640)&&(DrawY >= move_y) && (DrawY < move_y + 180);
 
 	 
 	 
-assign player_hp_bar_width = (phealthmax*100)/phealth;
+assign player_hp_bar_width = (phealth*100)/phealthmax;
 
-assign enemy_hp_bar_width = (ehealthmax*100)/ehealth;
+assign enemy_hp_bar_width = (ehealth*100)/ehealthmax;
 
 assign player_hp_bar_on = (DrawX >= player_hp_bar_x) && (DrawX < player_hp_bar_x + player_hp_bar_width) &&
                           (DrawY >= player_hp_bar_y) && (DrawY < player_hp_bar_y + hp_bar_height);
@@ -158,47 +159,47 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                              Blue  = spriteb;
                              end
                         end
-//                        if (player_hp_bar_on) begin
-//                            if(phealth >= 60)begin
-//                                    Red = 4'h0;
-//                                    Green = 4'hF;
-//                                    Blue = 4'h0;
+                        if (player_hp_bar_on) begin
+                            if(phealth >= 60)begin
+                                    Red = 4'h0;
+                                    Green = 4'hF;
+                                    Blue = 4'h0;
                                 
-//                                end
-//                             else if((phealth <= 60) || (phealth >=20))begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h2;
-//                                    Blue = 4'h2;
+                                end
+                             else if((phealth <= 60) || (phealth >=20))begin
+                                    Red = 4'hF;
+                                    Green = 4'h2;
+                                    Blue = 4'h2;
                              
-//                             end
-//                             else begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h0;
-//                                    Blue = 4'h0;
+                             end
+                             else begin
+                                    Red = 4'hF;
+                                    Green = 4'h0;
+                                    Blue = 4'h0;
                              
                              
-//                             end                      
-//                        end
-//                        if (enemy_hp_bar_on) begin
-//                            if(ehealth >= 60)begin
-//                                    Red = 4'h0;
-//                                    Green = 4'hF;
-//                                    Blue = 4'h0;
+                             end                      
+                        end
+                        if (enemy_hp_bar_on) begin
+                            if(ehealth >= 60)begin
+                                    Red = 4'h0;
+                                    Green = 4'hF;
+                                    Blue = 4'h0;
                                 
-//                                end
-//                             else if((ehealth <= 60) || (ehealth >=20))begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h2;
-//                                    Blue = 4'h2;
+                                end
+                             else if((ehealth <= 60) || (ehealth >=20))begin
+                                    Red = 4'hF;
+                                    Green = 4'h2;
+                                    Blue = 4'h2;
                              
-//                             end
-//                             else begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h0;
-//                                    Blue = 4'h0;
-//                             end
+                             end
+                             else begin
+                                    Red = 4'hF;
+                                    Green = 4'h0;
+                                    Blue = 4'h0;
+                             end
                             
-//                        end
+                        end
                         if (player_fainted) begin
                             if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
                                 Red = 4'hF;
@@ -242,46 +243,46 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                             
                             
                             end
-//                        if (player_hp_bar_on) begin
-//                            if(phealth >= 60)begin
-//                                    Red = 4'h0;
-//                                    Green = 4'hF;
-//                                    Blue = 4'h0;
+                        if (player_hp_bar_on) begin
+                            if(phealth >= 60)begin
+                                    Red = 4'h0;
+                                    Green = 4'hF;
+                                    Blue = 4'h0;
                                 
-//                                end
-//                             else if((phealth <= 60) || (phealth >=20))begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h2;
-//                                    Blue = 4'h2;
+                                end
+                             else if((phealth <= 60) || (phealth >=20))begin
+                                    Red = 4'hF;
+                                    Green = 4'h2;
+                                    Blue = 4'h2;
                              
-//                             end
-//                             else begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h0;
-//                                    Blue = 4'h0;
+                             end
+                             else begin
+                                    Red = 4'hF;
+                                    Green = 4'h0;
+                                    Blue = 4'h0;
                              
                              
-//                             end                      
-//                             end
-//                        if(enemy_hp_bar_on) begin
-//                            if(ehealth >= 60)begin
-//                                    Red = 4'h0;
-//                                    Green = 4'hF;
-//                                    Blue = 4'h0;
+                             end                      
+                             end
+                        if(enemy_hp_bar_on) begin
+                            if(ehealth >= 60)begin
+                                    Red = 4'h0;
+                                    Green = 4'hF;
+                                    Blue = 4'h0;
                                 
-//                                end
-//                             else if((ehealth <= 60) || (enemy_hp_bar_width >=20))begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h2;
-//                                    Blue = 4'h2;
+                                end
+                             else if((ehealth <= 60) || (enemy_hp_bar_width >=20))begin
+                                    Red = 4'hF;
+                                    Green = 4'h2;
+                                    Blue = 4'h2;
                              
-//                             end
-//                             else begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h0;
-//                                    Blue = 4'h0;
-//                             end
-//                        end
+                             end
+                             else begin
+                                    Red = 4'hF;
+                                    Green = 4'h0;
+                                    Blue = 4'h0;
+                             end
+                        end
                         if (player_fainted) begin
                             if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
                                 Red = 4'hF;
@@ -380,46 +381,46 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                              Blue  = spriteb;
                              end
                             end
-//                        if (player_hp_bar_on) begin
-//                            if(player_hp_bar_width >= 60)begin
-//                                    Red = 4'h0;
-//                                    Green = 4'hF;
-//                                    Blue = 4'h0;
+                        if (player_hp_bar_on) begin
+                            if(player_hp_bar_width >= 60)begin
+                                    Red = 4'h0;
+                                    Green = 4'hF;
+                                    Blue = 4'h0;
                                 
-//                                end
-//                             else if((player_hp_bar_width <= 60) || (player_hp_bar_width >=20))begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h2;
-//                                    Blue = 4'h2;
+                                end
+                             else if((player_hp_bar_width <= 60) || (player_hp_bar_width >=20))begin
+                                    Red = 4'hF;
+                                    Green = 4'h2;
+                                    Blue = 4'h2;
                              
-//                             end
-//                             else begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h0;
-//                                    Blue = 4'h0;
+                             end
+                             else begin
+                                    Red = 4'hF;
+                                    Green = 4'h0;
+                                    Blue = 4'h0;
                              
                              
-//                             end                      
-//                             end
-//                        if(enemy_hp_bar_on) begin
-//                            if(enemy_hp_bar_width >= 60)begin
-//                                    Red = 4'h0;
-//                                    Green = 4'hF;
-//                                    Blue = 4'h0;
+                             end                      
+                             end
+                        if(enemy_hp_bar_on) begin
+                            if(enemy_hp_bar_width >= 60)begin
+                                    Red = 4'h0;
+                                    Green = 4'hF;
+                                    Blue = 4'h0;
                                 
-//                                end
-//                             else if((enemy_hp_bar_width <= 60) || (enemy_hp_bar_width >=20))begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h2;
-//                                    Blue = 4'h2;
+                                end
+                             else if((enemy_hp_bar_width <= 60) || (enemy_hp_bar_width >=20))begin
+                                    Red = 4'hF;
+                                    Green = 4'h2;
+                                    Blue = 4'h2;
                              
-//                             end
-//                             else begin
-//                                    Red = 4'hF;
-//                                    Green = 4'h0;
-//                                    Blue = 4'h0;
-//                             end
-//                        end
+                             end
+                             else begin
+                                    Red = 4'hF;
+                                    Green = 4'h0;
+                                    Blue = 4'h0;
+                             end
+                        end
                         if (player_fainted) begin
                             if ((DrawY >= 10'd20) && (DrawY < 10'd28) && (DrawX >= 10'd20) && (DrawX < 10'd180)) begin
                                 Red = 4'hF;
@@ -483,15 +484,15 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                  end
                  battle:
                  begin
-                    if(display_state == 5'b00100)
+                    if(display_state == 5'b00011)
                         state_nxt = battle_select;
                     else if(player_fainted == 1'b1)
                     begin
-                        state_nxt = win;
+                        state_nxt = lose;
                     end
                     else if(enemy_fainted == 1'b1)
                     begin
-                        state_nxt = lose;
+                        state_nxt = win;
                     end
                     else
                     state_nxt = battle;
@@ -502,11 +503,11 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                         state_nxt = battle;
                    else if(player_fainted == 1'b1)
                     begin
-                        state_nxt = win;
+                        state_nxt = lose;
                     end
                     else if(enemy_fainted == 1'b1)
                     begin
-                        state_nxt = lose;
+                        state_nxt = win;
                     end
                     else
                         state_nxt = battle_select;
@@ -538,11 +539,11 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                     state_nxt = battle;
                 else if(player_fainted == 1'b1)
                     begin
-                        state_nxt = win;
+                        state_nxt = lose;
                     end
                 else if(enemy_fainted == 1'b1)
                     begin
-                        state_nxt = lose;
+                        state_nxt = win;
                     end
                 else
                     state_nxt = idle;
@@ -556,11 +557,11 @@ assign enemy_hp_bar_on = (DrawX >= enemy_hp_bar_x) && (DrawX < enemy_hp_bar_x + 
                     end
                     else if(player_fainted == 1'b1)
                     begin
-                        state_nxt = win;
+                        state_nxt = lose;
                     end
                     else if(enemy_fainted == 1'b1)
                     begin
-                        state_nxt = lose;
+                        state_nxt = win;
                     end
                     else if(display_state == 5'b00010)
                     begin
